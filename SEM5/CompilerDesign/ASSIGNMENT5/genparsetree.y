@@ -1,14 +1,9 @@
 %{
-   /** 
-       Yacc program to recognise a regular expression
-       and produce a parse tree as output
-    */
    #include <stdio.h>
    #include <ctype.h>
    #include <stdlib.h>
    #include <string.h>
 
-   /* To store the productions */
    #define MAX 100
 
    int getREindex ( const char* );
@@ -60,14 +55,15 @@ re : ALPHABET {
        {strcpy ( productions[count++] , "re | re" );}
    | re '.' re         
        {strcpy ( productions[count++] , "re . re" );}
+   | re '*' re         
+       {strcpy ( productions[count++] , "re * re" );}
+   | re '+' re         
+       {strcpy ( productions[count++] , "re + re" );}
    ;
 %%
 int main ( int argc , char **argv ) 
 {
-/* 
-     Parse and output the rightmost derivation,
-     from which we can get the parse tree 
-*/
+
   yyparse();
 
   return 0;
@@ -81,11 +77,11 @@ yylex()
     return ALPHABET;
   return ch;
 }
-yyerror() 
-{
-  fprintf(stderr , "Invalid Regular Expression!!\n");
-  exit ( 1 );
+yyerror(const char *s) {
+  fprintf(stderr, "Error: %s\n", s);
+  exit(1);
 }
+
 int getREindex ( const char *str ) 
 { 
   int i = strlen ( str ) - 1;
